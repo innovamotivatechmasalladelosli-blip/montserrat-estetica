@@ -138,18 +138,27 @@ const KawaiiOrb = () => {
 };
 
 export function Scene3D() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-  }, []);
+  // Se calcula en el primer render (no en un efecto): las opciones `gl` solo se leen
+  // al crear el contexto WebGL, así que un valor tardío no se aplicaría nunca.
+  const [isMobile] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-100">
       <Canvas 
         camera={{ position: [0, 0, 6], fov: 45 }}
-        gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-        dpr={isMobile ? [1, 1] : [1, 2]}
+        gl={{
+          alpha: true,
+          // En móvil el antialias + "high-performance" dispara el coste de GPU y
+          // provoca pérdidas de contexto en gamas medias.
+          antialias: !isMobile,
+          powerPreference: isMobile ? 'default' : 'high-performance',
+          failIfMajorPerformanceCaveat: false,
+        }}
+        dpr={isMobile ? 1 : [1, 2]}
+        // El canvas nunca debe capturar toques: es puramente decorativo.
+        style={{ pointerEvents: 'none' }}
       >
         <Suspense fallback={null}>
           <ambientLight intensity={1.5} />
@@ -158,7 +167,8 @@ export function Scene3D() {
           
           <KawaiiOrb />
           
-          <Environment files={null} resolution={64} background={false}>
+          {/* Sin prop `files`: con `files={null}` drei intenta cargar una URL nula y lanza. */}
+          <Environment resolution={64} background={false}>
             {/* Extremely lightweight environment fallback to provide reflections */}
             <mesh>
               <sphereGeometry args={[50, 16, 16]} />
