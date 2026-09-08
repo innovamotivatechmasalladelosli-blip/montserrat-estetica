@@ -25,6 +25,13 @@
 }
 
 @layer utilities {
+  /* Tailwind v4 no trae `pb-safe` de fábrica y App.tsx ya la usaba en la barra
+     inferior: sin esta definición era una clase muerta y la nav quedaba debajo
+     del indicador de inicio en iPhone. */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
