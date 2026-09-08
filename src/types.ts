@@ -22,3 +22,10 @@ export interface Stylist {
   imageUrl: string;
   isAvailableToday?: boolean;
 }
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+    }
+  }
+}

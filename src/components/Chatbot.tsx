@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Send, Sparkles, ArrowRight, History, MessageSquare , Camera, Image as ImageIcon, Mic, CheckCircle2 } from 'lucide-react';
 import { services, products } from "../data";
+import { Scene3D } from './Scene3D';
 
 interface Message {
   id: string;
@@ -259,8 +260,15 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
                 <p className="text-xs uppercase tracking-widest font-bold text-brand-gold mb-2 mt-2">Servicios Recomendados</p>
                 <div className="space-y-2">
                   {matchedServices.slice(0, 2).map(s => (
-                    <div key={s.id} className="p-3 bg-brand-surface border border-brand-border/60 rounded-xl">
-                      <p className="font-semibold text-brand-espresso text-sm">{s.title}</p>
+                    <div 
+                      key={s.id} 
+                      onClick={() => onNavigate('reservar')}
+                      className="p-3 bg-brand-surface border border-brand-border/60 rounded-xl cursor-pointer hover:border-brand-gold hover:shadow-md transition-all group"
+                    >
+                      <div className="flex justify-between items-center">
+                        <p className="font-semibold text-brand-espresso text-sm group-hover:text-brand-gold transition-colors">{s.title}</p>
+                        <span className="text-xs text-brand-gold opacity-0 group-hover:opacity-100 transition-opacity">Reservar</span>
+                      </div>
                       <p className="text-xs text-brand-muted mt-1">${s.price.toLocaleString()} MXN • {s.duration} min</p>
                     </div>
                   ))}
@@ -272,10 +280,13 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
                 <p className="text-xs uppercase tracking-widest font-bold text-brand-gold mb-2 mt-3">Productos Recomendados</p>
                 <div className="space-y-2">
                   {matchedProducts.slice(0, 2).map(p => (
-                    <div key={p.id} className="p-3 bg-brand-surface border border-brand-border/60 rounded-xl flex items-center gap-3">
+                    <div 
+                      key={p.id} 
+                      className="p-3 bg-brand-surface border border-brand-border/60 rounded-xl flex items-center gap-3 cursor-pointer hover:border-brand-gold hover:shadow-md transition-all group"
+                    >
                       <img src={p.img} alt={p.name} className="w-10 h-10 rounded-md object-cover" />
-                      <div>
-                        <p className="font-semibold text-brand-espresso text-sm">{p.name}</p>
+                      <div className="flex-1">
+                        <p className="font-semibold text-brand-espresso text-sm group-hover:text-brand-gold transition-colors">{p.name}</p>
                         <p className="text-xs text-brand-muted">{p.brand} • ${p.price.toLocaleString()} MXN</p>
                       </div>
                     </div>
@@ -394,10 +405,9 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
 
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
+    <>
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -405,25 +415,43 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
             onClick={onClose}
             className="fixed inset-0 bg-brand-surface/60 backdrop-blur-sm z-[60] md:hidden"
           />
+        )}
+      </AnimatePresence>
 
-          {/* Chat Panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed bottom-0 left-0 right-0 md:bottom-28 md:right-8 md:left-auto md:w-[420px] h-[85vh] md:h-[650px] bg-brand-surface z-[70] rounded-t-[2rem] md:rounded-[2rem] shadow-[0_20px_60px_-10px_rgba(30,27,24,0.15)] border border-brand-border/50 flex flex-col overflow-hidden"
-          >
-            {/* Header */}
-            <div className="bg-brand-surface-container/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-brand-border/50">
+      {/* Chat Panel - Always mounted to prevent Spline WebGPU crash, but hidden when closed */}
+      <motion.div
+        initial={false}
+        animate={{ 
+          opacity: isOpen ? 1 : 0, 
+          y: isOpen ? 0 : 50, 
+          scale: isOpen ? 1 : 0.95,
+          pointerEvents: isOpen ? 'auto' : 'none'
+        }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="fixed bottom-0 left-0 right-0 md:bottom-28 md:right-8 md:left-auto md:w-[420px] h-[92dvh] md:h-[650px] bg-brand-surface z-[70] rounded-t-[2rem] md:rounded-[2rem] shadow-[0_20px_60px_-10px_rgba(30,27,24,0.15)] border border-brand-border/50 flex flex-col overflow-hidden"
+      >
+        {/* Background 3D React-Three-Fiber */}
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-brand-surface overflow-hidden">
+          {/* Watermark text */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
+            <span className="font-serif font-black text-brand-espresso text-8xl md:text-[10rem]" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
+              MontIA+
+            </span>
+          </div>
+          <div className="absolute inset-0 z-10">
+            <Scene3D />
+          </div>
+        </div>
+        {/* Header */}
+            <div className="relative z-10 bg-brand-surface-container/80 backdrop-blur-md px-6 py-4 flex items-center justify-between border-b border-brand-border/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-espresso text-brand-surface flex items-center justify-center shadow-inner font-serif font-bold text-sm">
-                  IA
+                <div className="w-10 h-10 rounded-full bg-brand-espresso text-brand-surface flex items-center justify-center shadow-inner font-serif font-bold text-xs tracking-wider">
+                  M+
                 </div>
                 <div>
-                  <h3 className="font-serif font-semibold text-brand-espresso leading-tight text-lg">Concierge IA</h3>
+                  <h3 className="font-serif font-semibold text-brand-espresso leading-tight text-lg">MontIA+</h3>
                   <p className="text-[9px] uppercase tracking-[0.15em] font-bold text-brand-muted mt-0.5 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> En línea
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" /> En línea
                   </p>
                 </div>
               </div>
@@ -451,7 +479,7 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
             {view === 'chat' ? (
               <>
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-brand-surface/50 to-brand-surface-container/20 no-scrollbar">
+                <div className="relative z-10 flex-1 overflow-y-auto p-5 space-y-5 bg-gradient-to-b from-brand-surface/30 to-brand-surface-container/10 no-scrollbar">
                   {messages.map((msg, index) => (
                     <motion.div 
                       initial={{ opacity: 0, y: 10 }}
@@ -502,7 +530,7 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
 
                 
                 {/* Input Area */}
-                <div className="p-4 bg-brand-surface border-t border-brand-border/50 flex flex-col gap-3">
+                <div className="relative z-10 p-4 bg-brand-surface/80 backdrop-blur-md border-t border-brand-border/50 flex flex-col gap-3">
                   {selectedImage && (
                     <div className="relative inline-block w-20 h-20">
                       <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-lg border border-brand-border" />
@@ -545,7 +573,7 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
                         <Mic className="w-4 h-4" />
                       </button>
                       <button 
-
+                        onClick={() => handleSend()}
                         disabled={!input.trim() && !selectedImage}
                         className="absolute right-2 top-1 w-10 h-10 rounded-full bg-brand-espresso text-brand-gold flex items-center justify-center disabled:opacity-50 disabled:bg-brand-muted disabled:text-brand-surface transition-all hover:bg-brand-espresso/90 hover:scale-105 active:scale-95 shadow-md"
                       >
@@ -558,7 +586,7 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
               </>
             ) : (
               /* History View */
-              <div className="flex-1 bg-brand-surface-container/30 overflow-y-auto no-scrollbar p-4">
+              <div className="relative z-10 flex-1 bg-brand-surface-container/80 backdrop-blur-md overflow-y-auto no-scrollbar p-4">
                 <h4 className="text-xs font-bold uppercase tracking-widest text-brand-muted mb-4 px-2">Historial de Conversaciones</h4>
                 <div className="space-y-3">
                   {savedChats.map(chat => (
@@ -574,8 +602,6 @@ export function Chatbot({ isOpen, onClose, onNavigate, onAddService }: { isOpen:
               </div>
             )}
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    </>
   );
 }

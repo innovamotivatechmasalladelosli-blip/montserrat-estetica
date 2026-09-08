@@ -3,15 +3,13 @@ import { motion } from 'motion/react';
 import { ArrowRight, Star, ShoppingBag, Scissors } from 'lucide-react';
 import { services, products as seasonalProducts } from '../data';
 
-import Spline from '@splinetool/react-spline';
-
 export function ExplorarView({ onNavigate }: { onNavigate: (nav: string) => void }) {
   return (
     <main className="px-5 md:px-10 pt-6 pb-12 max-w-7xl mx-auto space-y-12 w-full">
       {/* Hero */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative rounded-[2rem] overflow-hidden h-[400px] md:h-[500px] w-full group bg-brand-espresso text-brand-surface">
          <div className="absolute inset-0 w-full h-full object-cover">
-            <Spline scene="https://prod.spline.design/9CFWNtiRN4Ew-AE1/scene.splinecode" />
+            <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2938&auto=format&fit=crop" alt="Estética y Botánica" className="w-full h-full object-cover" />
          </div>
          <div className="absolute inset-0 bg-gradient-to-t from-brand-espresso via-brand-espresso/60 to-transparent pointer-events-none" />
          <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end pointer-events-none">

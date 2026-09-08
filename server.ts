@@ -46,7 +46,7 @@ Ejemplo de recomendación:
       // Multimodal request
       const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
       response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: 'gemini-flash-latest',
         contents: [
           {
             role: 'user',
@@ -66,7 +66,7 @@ Ejemplo de recomendación:
     } else {
       // Text request
       response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: 'gemini-flash-latest',
         contents: prompt,
         config: { systemInstruction }
       });
