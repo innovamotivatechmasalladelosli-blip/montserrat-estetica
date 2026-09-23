@@ -7,11 +7,14 @@ import { ServiciosView } from './views/ServiciosView';
 import { ReservarView } from './views/ReservarView';
 import { PerfilView } from './views/PerfilView';
 import { Chatbot } from './components/Chatbot';
+import { KawaiiBubbleButton } from './components/KawaiiBubbleButton';
+import { GuidedRobotTour } from './components/GuidedRobotTour';
 
 function App() {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [currentNav, setCurrentNav] = useState('explorar');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const handleAddService = (id: string) => {
     setSelectedServices(prev => {
@@ -82,9 +85,9 @@ function App() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col"
           >
-            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} />}
+            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} onSelectService={handleAddService} />}
             {currentNav === 'servicios' && <ServiciosView selectedServices={selectedServices} handleSelectService={handleSelectService} />}
-            {currentNav === 'reservar' && <ReservarView selectedServices={selectedServices} />}
+            {currentNav === 'reservar' && <ReservarView selectedServices={selectedServices} onNavigate={setCurrentNav} />}
             {currentNav === 'perfil' && <PerfilView />}
           </motion.div>
         </AnimatePresence>
@@ -92,58 +95,38 @@ function App() {
 
       {/* Floating Booking Summary Bar */}
       {selectedServices.length > 0 && currentNav !== 'reservar' && (
-        <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-[420px] z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
-          <div className="bg-brand-surface rounded-[28px] p-2 pr-2.5 flex items-center justify-between shadow-[0_16px_48px_-8px_rgba(30,27,24,0.12),0_0_0_1px_rgba(197,168,128,0.28)] backdrop-blur-xl">
+        <div className="fixed bottom-[76px] md:bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-[420px] z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
+          <div className="bg-brand-surface rounded-[28px] p-2 pr-2.5 flex items-center justify-between shadow-[0_16px_48px_-8px_rgba(30,27,24,0.18),0_0_0_1px_rgba(197,168,128,0.35)] backdrop-blur-xl border border-brand-border/60">
             <div className="flex items-center gap-3 pl-2">
-              <div className="w-10 h-10 rounded-full bg-brand-espresso text-white flex items-center justify-center font-semibold text-[13px]">
+              <div className="w-10 h-10 rounded-full bg-brand-espresso text-white flex items-center justify-center font-semibold text-[13px] border border-brand-gold/40">
                 {selectedServices.length}
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold tracking-widest uppercase text-brand-muted">Resumen de cita</span>
-                <span className="font-semibold text-brand-espresso text-[15px]">
-                  {selectedServices.length} servicio{selectedServices.length > 1 ? 's' : ''} • ${totalSelectedPrice}
+                <span className="text-[10px] font-bold tracking-widest uppercase text-brand-gold">Resumen de cita</span>
+                <span className="font-semibold text-brand-espresso text-[14px]">
+                  {selectedServices.length} servicio{selectedServices.length > 1 ? 's' : ''} • ${totalSelectedPrice.toLocaleString()} MXN
                 </span>
               </div>
             </div>
-            <button onClick={() => setCurrentNav('reservar')} className="bg-brand-espresso text-white px-5 py-3.5 rounded-full text-[14px] font-semibold flex items-center gap-2 hover:bg-brand-espresso/90 transition-all active:scale-95">
-              Continuar <span>→</span>
+            <button 
+              onClick={() => setCurrentNav('reservar')} 
+              className="bg-brand-espresso text-white px-5 py-3.5 rounded-full text-[13px] font-semibold flex items-center gap-2 hover:bg-brand-espresso/90 transition-all active:scale-95 shadow-sm"
+            >
+              Continuar <ArrowRight className="w-4 h-4 text-brand-gold" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Booking bottom bar for Reservar View */}
-      {currentNav === 'reservar' && (
-         <div className="fixed bottom-[72px] md:bottom-0 left-0 right-0 bg-brand-surface border-t border-brand-border/60 p-4 md:p-6 z-50 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-1 text-[10px] uppercase font-bold tracking-widest text-brand-muted">
-                 Cita Seleccionada
-              </div>
-              <span className="font-semibold text-sm">Hoy, 18 Oct • 16:30</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                 <span className="font-serif text-xl font-semibold">${totalSelectedPrice || 180}</span>
-              </div>
-              <button className="bg-brand-espresso text-white px-6 py-3 rounded-full text-sm font-semibold flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform">
-                Confirmar <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-         </div>
-      )}
-
-      {/* Floating AI Bubble */}
-      <button 
+      {/* Floating 2D Speech Bubble Launcher */}
+      <KawaiiBubbleButton 
         onClick={() => setIsChatOpen(true)}
-        className={`fixed right-4 md:right-8 z-40 w-14 h-14 rounded-full shadow-[0_12px_30px_-4px_rgba(30,27,24,0.3)] flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 bg-brand-espresso text-brand-gold border border-brand-gold/20
-          ${currentNav === 'reservar' ? 'bottom-[150px] md:bottom-[100px]' : 
-            selectedServices.length > 0 ? 'bottom-[172px] md:bottom-[116px]' : 'bottom-[96px] md:bottom-8'}
-          ${isChatOpen ? 'scale-0 opacity-0 pointer-events-none' : 'scale-100 opacity-100'}
-        `}
-        aria-label="Asistente IA"
-      >
-        <div className="relative flex items-center justify-center"><MessageCircle className="w-6 h-6" /><Sparkles className="w-3 h-3 absolute -top-1 -right-2 text-brand-gold" /></div>
-      </button>
+        isOpen={isChatOpen || isGuideOpen}
+        className={`right-4 md:right-8 transition-all duration-300 ${
+          currentNav === 'reservar' ? 'bottom-[150px] md:bottom-[100px]' : 
+          selectedServices.length > 0 ? 'bottom-[172px] md:bottom-[116px]' : 'bottom-[96px] md:bottom-8'
+        }`}
+      />
 
       {/* Chatbot Interface */}
       <Chatbot 
@@ -151,6 +134,24 @@ function App() {
         onClose={() => setIsChatOpen(false)} 
         onNavigate={(nav) => { setCurrentNav(nav); }}
         onAddService={handleAddService}
+        currentNav={currentNav}
+        selectedServicesCount={selectedServices.length}
+        onDeployGuide={() => {
+          setIsChatOpen(false);
+          setIsGuideOpen(true);
+        }}
+      />
+
+      {/* Interactive Step-by-step Flying Robot Companion Tour */}
+      <GuidedRobotTour 
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
+        onNavigate={(nav) => setCurrentNav(nav)}
+        currentNav={currentNav}
+        onOpenChat={() => {
+          setIsGuideOpen(false);
+          setIsChatOpen(true);
+        }}
       />
 
       {/* Bottom Navigation (Mobile Only) */}

@@ -14,6 +14,21 @@
     <meta property="og:description" content="Centro de estética y cuidado personal" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        var origWarn = console.warn;
+        console.warn = function() {
+          var args = Array.prototype.slice.call(arguments);
+          var str = args.map(function(item) {
+            return (typeof item === 'string') ? item : (item && item.message) ? item.message : '';
+          }).join(' ');
+          if (str.indexOf('THREE.Clock') !== -1 || str.indexOf('Clock: This module has been deprecated') !== -1) {
+            return;
+          }
+          origWarn.apply(console, arguments);
+        };
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

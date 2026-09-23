@@ -1,7 +1,10 @@
 {
   "name": "Montserrat Medina Estetica",
   "description": "Aplicación de reservas para el centro Montserrat Medina Estética.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
   ]
