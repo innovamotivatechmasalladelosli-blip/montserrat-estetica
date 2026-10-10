@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, ShoppingBag, Scissors, Sparkles, Check } from 'lucide-react';
 import { services, products as seasonalProducts } from '../data';
 import { SafeImage } from '../components/SafeImage';
-import { LegalModal, type LegalPage } from '../components/LegalModal';
+import type { LegalPage } from '../components/LegalModal';
+import { ContactLinks } from '../components/ContactLinks';
+import { OPEN_COOKIE_PREFERENCES_EVENT } from '../lib/cookiePreferences';
 
 interface ExplorarViewProps {
   onNavigate: (nav: string) => void;
   onSelectService?: (id: string) => void;
   onOpenChat?: () => void;
+  onOpenLegal?: (page: LegalPage) => void;
 }
-export function ExplorarView({ onNavigate, onSelectService, onOpenChat }: ExplorarViewProps) {
+export function ExplorarView({ onNavigate, onSelectService, onOpenChat, onOpenLegal }: ExplorarViewProps) {
   const [productNotice, setProductNotice] = useState<string | null>(null);
-  const [legalPage, setLegalPage] = useState<LegalPage | null>(null);
-
-  useEffect(() => {
-    const openLegalPage = (event: Event) => {
-      const page = (event as CustomEvent<LegalPage>).detail;
-      if (['terms', 'copyright', 'privacy', 'cookies'].includes(page)) setLegalPage(page);
-    };
-    window.addEventListener('open-legal-page', openLegalPage);
-    return () => window.removeEventListener('open-legal-page', openLegalPage);
-  }, []);
 
   const handleBookService = (serviceId: string) => {
     if (onSelectService) {
@@ -239,19 +232,20 @@ export function ExplorarView({ onNavigate, onSelectService, onOpenChat }: Explor
          <div className="flex justify-center items-center gap-1 text-amber-500">
            {'★'.repeat(5)}
          </div>
+         <ContactLinks />
       </section>
 
       <footer className="border-t border-brand-border/70 pt-6 pb-2 text-center">
         <nav aria-label="Avisos del sitio" className="mb-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-brand-muted">
-          <button onClick={() => setLegalPage('terms')} className="hover:text-brand-espresso">Términos y servicios</button>
-          <button onClick={() => setLegalPage('copyright')} className="hover:text-brand-espresso">Derechos de autor</button>
-          <button onClick={() => setLegalPage('privacy')} className="hover:text-brand-espresso">Aviso de privacidad</button>
-          <button onClick={() => setLegalPage('cookies')} className="hover:text-brand-espresso">Política de cookies</button>
+          <button onClick={() => onOpenLegal?.('terms')} className="hover:text-brand-espresso">Términos y servicios</button>
+          <button onClick={() => onOpenLegal?.('copyright')} className="hover:text-brand-espresso">Derechos de autor</button>
+          <button onClick={() => onOpenLegal?.('privacy')} className="hover:text-brand-espresso">Aviso de privacidad</button>
+          <button onClick={() => onOpenLegal?.('cookies')} className="hover:text-brand-espresso">Política de cookies</button>
+          <button onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_PREFERENCES_EVENT))} className="hover:text-brand-espresso">Preferencias de cookies</button>
         </nav>
         <p className="text-[11px] text-brand-muted">© 2026 Montserrat Medina Estética. Todos los derechos reservados.</p>
         <p className="mt-1 text-[10px] text-brand-muted/80">Los nombres de marca y productos pertenecen a sus respectivos titulares.</p>
       </footer>
-      <LegalModal page={legalPage} onClose={() => setLegalPage(null)} />
     </main>
   );
 }

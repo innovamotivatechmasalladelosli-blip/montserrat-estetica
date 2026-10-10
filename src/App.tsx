@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserCircle2, Sparkles, MessageCircle, LayoutGrid, Scissors, CalendarCheck2, FileText, User, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { services } from './data';
@@ -9,12 +9,24 @@ import { PerfilView } from './views/PerfilView';
 import { Chatbot } from './components/Chatbot';
 import { KawaiiBubbleButton } from './components/KawaiiBubbleButton';
 import { GuidedRobotTour } from './components/GuidedRobotTour';
+import { CookieConsent } from './components/CookieConsent';
+import { LegalModal, type LegalPage } from './components/LegalModal';
 
 function App() {
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [currentNav, setCurrentNav] = useState('explorar');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [legalPage, setLegalPage] = useState<LegalPage | null>(null);
+
+  useEffect(() => {
+    const openLegalPage = (event: Event) => {
+      const page = (event as CustomEvent<LegalPage>).detail;
+      if (['terms', 'copyright', 'privacy', 'cookies'].includes(page)) setLegalPage(page);
+    };
+    window.addEventListener('open-legal-page', openLegalPage);
+    return () => window.removeEventListener('open-legal-page', openLegalPage);
+  }, []);
 
   const handleAddService = (id: string) => {
     setSelectedServices(prev => {
@@ -85,7 +97,7 @@ function App() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col"
           >
-            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} onSelectService={handleAddService} onOpenChat={() => setIsChatOpen(true)} />}
+            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} onSelectService={handleAddService} onOpenChat={() => setIsChatOpen(true)} onOpenLegal={setLegalPage} />}
             {currentNav === 'servicios' && <ServiciosView selectedServices={selectedServices} handleSelectService={handleSelectService} />}
             {currentNav === 'reservar' && <ReservarView selectedServices={selectedServices} onNavigate={setCurrentNav} />}
             {currentNav === 'perfil' && <PerfilView />}
@@ -153,6 +165,9 @@ function App() {
           setIsChatOpen(true);
         }}
       />
+
+      <CookieConsent onOpenPolicy={() => setLegalPage('cookies')} />
+      <LegalModal page={legalPage} onClose={() => setLegalPage(null)} />
 
       {/* Bottom Navigation (Mobile Only) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-brand-surface border-t border-brand-border/60 pb-safe z-40">

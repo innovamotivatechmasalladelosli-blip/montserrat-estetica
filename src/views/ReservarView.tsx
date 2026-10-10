@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Check, Star, Clock, CreditCard, Banknote, Landmark, CheckCircle2, Calendar } from 'lucide-react';
 import { stylists, services } from '../data';
 import { SafeImage } from '../components/SafeImage';
+import { ContactLinks } from '../components/ContactLinks';
 
 interface ReservarViewProps {
   selectedServices: string[];
@@ -91,6 +92,7 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
             Modificar Reserva
           </button>
         </div>
+        <ContactLinks variant="booking" />
       </main>
     );
   }
@@ -324,6 +326,8 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
            </div>
         </div>
       </section>
+
+      <ContactLinks variant="booking" />
 
       {/* Action Summary */}
       <div className="pt-8 border-t border-brand-border/60 mt-4">
