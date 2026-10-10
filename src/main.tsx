@@ -1,4 +1,3 @@
-import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import * as THREE from 'three';
 import App from './App.tsx';
@@ -35,10 +34,8 @@ if (typeof window !== 'undefined') {
 const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
-    <ErrorBoundary fallback={null}>
-      <StrictMode>
-        <App />
-      </StrictMode>
+    <ErrorBoundary>
+      <App />
     </ErrorBoundary>,
   );
 }

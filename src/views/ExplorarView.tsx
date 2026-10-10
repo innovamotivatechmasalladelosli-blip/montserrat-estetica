@@ -38,7 +38,7 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="relative rounded-[2rem] overflow-hidden h-[420px] md:h-[500px] w-full group bg-brand-espresso text-brand-surface shadow-md"
+        className="relative rounded-[2rem] overflow-hidden h-[420px] md:h-[500px] w-full group bg-brand-espresso text-brand-surface"
       >
          <div className="absolute inset-0 w-full h-full object-cover">
             <SafeImage
@@ -50,9 +50,6 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
          <div className="absolute inset-0 bg-gradient-to-t from-brand-espresso via-brand-espresso/60 to-transparent pointer-events-none" />
          <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end pointer-events-none">
             <div className="max-w-xl pointer-events-auto">
-               <span className="text-[11px] uppercase tracking-wider font-bold mb-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 text-brand-gold border border-brand-gold/40 backdrop-blur-md">
-                 <Sparkles className="w-3.5 h-3.5 text-brand-gold" /> Inicio • Lo más pedido y recomendado
-               </span>
                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight mb-3 text-white">
                  Elige tu servicio y agenda tu cita en segundos
                </h2>
@@ -62,13 +59,13 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
                <div className="flex flex-wrap gap-2.5 sm:gap-3">
                  <button 
                    onClick={() => onNavigate('reservar')} 
-                   className="bg-brand-gold text-brand-espresso px-5 sm:px-6 py-3.5 rounded-full text-xs sm:text-sm font-bold flex items-center gap-2 hover:bg-white transition-all shadow-md active:scale-95 cursor-pointer"
+                   className="bg-brand-gold text-brand-espresso px-5 sm:px-6 py-3.5 rounded-full text-xs sm:text-sm font-bold flex items-center gap-2 hover:bg-white transition-colors active:scale-95 cursor-pointer"
                  >
                    Agendar mi cita ahora <ArrowRight className="w-4 h-4 text-brand-espresso" />
                  </button>
                  <button 
                    onClick={() => onNavigate('servicios')} 
-                   className="bg-white/15 backdrop-blur-md border border-white/30 text-white px-5 sm:px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/25 transition-all active:scale-95 cursor-pointer"
+                   className="bg-white/15 backdrop-blur-md text-white px-5 sm:px-6 py-3.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-white/25 transition-colors active:scale-95 cursor-pointer"
                  >
                    Ver todos los servicios
                  </button>
@@ -77,7 +74,7 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
                      const el = document.getElementById('productos-temporada');
                      el?.scrollIntoView({ behavior: 'smooth' });
                    }} 
-                   className="bg-black/30 backdrop-blur-md border border-white/20 text-white/90 hover:text-white px-4 py-3.5 rounded-full text-xs sm:text-sm font-medium hover:bg-black/50 transition-all active:scale-95 cursor-pointer"
+                   className="bg-black/30 backdrop-blur-md text-white/90 hover:text-white px-4 py-3.5 rounded-full text-xs sm:text-sm font-medium hover:bg-black/50 transition-colors active:scale-95 cursor-pointer"
                  >
                    Ver productos
                  </button>
@@ -85,6 +82,12 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
             </div>
          </div>
       </motion.div>
+
+      <div className="pt-1 md:pt-2">
+        <span className="text-[10px] uppercase tracking-[0.22em] font-bold text-brand-gold">
+          Lo más pedido y recomendado
+        </span>
+      </div>
 
       {/* Productos de Temporada */}
       <section id="productos-temporada">

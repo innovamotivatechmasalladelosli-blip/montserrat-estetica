@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Sparkles, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
+import { ErrorBoundary } from './ErrorBoundary';
 
 // =======================================================================
 // HIGH-END PROCEDURAL PBR TEXTURES (DIFFUSE + TANGENT NORMAL + ROUGHNESS)
@@ -195,10 +196,10 @@ class KawaiiFaceRenderer {
     const drawBlush = (x: number, y: number, isRight: boolean) => {
       ctx.save();
       const grad = ctx.createRadialGradient(x, y, 3, x, y, 56);
-      grad.addColorStop(0, `rgba(255, 90, 155, ${0.95 * this.blushPulse})`);
-      grad.addColorStop(0.42, `rgba(255, 125, 180, ${0.58 * this.blushPulse})`);
-      grad.addColorStop(0.85, `rgba(255, 160, 210, ${0.18 * this.blushPulse})`);
-      grad.addColorStop(1, 'rgba(255, 180, 220, 0)');
+      grad.addColorStop(0, `rgba(221, 183, 122, ${0.58 * this.blushPulse})`);
+      grad.addColorStop(0.42, `rgba(248, 240, 231, ${0.24 * this.blushPulse})`);
+      grad.addColorStop(0.85, `rgba(221, 183, 122, ${0.08 * this.blushPulse})`);
+      grad.addColorStop(1, 'rgba(221, 183, 122, 0)');
 
       ctx.fillStyle = grad;
       ctx.beginPath();
@@ -218,9 +219,9 @@ class KawaiiFaceRenderer {
 
       // Cute floating sparkle or hearts over blush
       if (this.expression === 'love') {
-        ctx.fillStyle = '#FF7597';
-        ctx.shadowColor = '#FF94B2';
-        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#DDB77A';
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         const hx = isRight ? x + 24 : x - 24;
         const hy = y - 22 + Math.sin(time * 5.0) * 3;
         ctx.beginPath();
@@ -232,8 +233,8 @@ class KawaiiFaceRenderer {
         ctx.fill();
       } else if (this.expression === 'starEyes' || this.expression === 'happy' || this.blushPulse > 1.05) {
         ctx.fillStyle = '#FFFFFF';
-        ctx.shadowColor = '#FFFFFF';
-        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         const sparkX = isRight ? x + 24 : x - 24;
         const sparkY = y - 16 + Math.sin(time * 6.0) * 2;
         ctx.beginPath();
@@ -274,8 +275,8 @@ class KawaiiFaceRenderer {
 
         ctx.lineWidth = 14;
         ctx.strokeStyle = '#FFFFFF';
-        ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
-        ctx.shadowBlur = 28;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         ctx.stroke();
 
         ctx.fillStyle = '#FFFFFF';
@@ -309,8 +310,8 @@ class KawaiiFaceRenderer {
 
         ctx.lineWidth = 14;
         ctx.strokeStyle = '#FFFFFF';
-        ctx.shadowColor = 'rgba(255, 180, 210, 1.0)';
-        ctx.shadowBlur = 26;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         ctx.stroke();
 
         ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
@@ -332,8 +333,8 @@ class KawaiiFaceRenderer {
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 11;
         ctx.lineCap = 'round';
-        ctx.shadowColor = '#FFFFFF';
-        ctx.shadowBlur = 18;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
         ctx.beginPath();
         ctx.arc(x, y - 96, 32, Math.PI * 1.25, Math.PI * 1.85);
         ctx.stroke();
@@ -350,8 +351,8 @@ class KawaiiFaceRenderer {
         ctx.lineWidth = 20;
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#FFFFFF';
-        ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
-        ctx.shadowBlur = 24;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
 
         ctx.arc(x, y + 10, archW, Math.PI * 1.15, Math.PI * 1.85, false);
         ctx.stroke();
@@ -359,8 +360,8 @@ class KawaiiFaceRenderer {
         // Extra cute wink star twinkle
         if (isWinking) {
           ctx.fillStyle = '#FFFFFF';
-          ctx.shadowColor = '#FFFFFF';
-          ctx.shadowBlur = 16;
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
           const sx = x - 42;
           const sy = y - 26;
           ctx.beginPath();
@@ -396,8 +397,8 @@ class KawaiiFaceRenderer {
       // Bold crisp white stroke with rich glow
       ctx.lineWidth = 20;
       ctx.strokeStyle = '#FFFFFF';
-      ctx.shadowColor = 'rgba(255, 255, 255, 1.0)';
-      ctx.shadowBlur = 24;
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
       ctx.stroke();
 
       // Luminous inner fill
@@ -407,8 +408,8 @@ class KawaiiFaceRenderer {
       // Clean single specular glint inside the eye
       if (scaleY > 0.4) {
         ctx.fillStyle = '#FFFFFF';
-        ctx.shadowColor = '#FFFFFF';
-        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
 
         ctx.beginPath();
         ctx.arc(-14 + shiftX * 0.5, -eyeH * 0.22 + shiftY * 0.5, 14 * scaleY, 0, Math.PI * 2);
@@ -431,8 +432,8 @@ class KawaiiFaceRenderer {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = '#FFFFFF';
-    ctx.shadowColor = 'rgba(255, 255, 255, 0.95)';
-    ctx.shadowBlur = 18;
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
     const isCheerfulOpen = this.expression === 'starEyes' || this.expression === 'love' || this.mouthOpen > 0.1;
 
@@ -525,17 +526,8 @@ const OrganicKawaiiFaceShader = {
       float topFalloff = clamp(normal.y * 0.58 + 0.48, 0.0, 1.0);
       vec3 faceColor = mix(base * 0.78, base * 1.38 + vec3(0.12, 0.08, 0.16), topFalloff);
 
-      // Studio specular glint (upper-left)
-      vec3 lightDir = normalize(vec3(0.4, 0.85, 0.75));
-      vec3 halfVec = normalize(lightDir + viewDir);
-      float spec = pow(max(dot(normal, halfVec), 0.0), 34.0);
-      faceColor += vec3(0.98, 0.95, 1.0) * spec * 0.55;
-
-      // Ethereal Fresnel Rim Aura (soft iridescence edge)
-      float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
-      fresnel = pow(fresnel, 2.2);
-      vec3 rim = mix(vec3(0.98, 0.94, 1.0), base * 1.45, 0.35);
-      faceColor = mix(faceColor, rim, fresnel * 0.56);
+      // Matte finish: keep the form readable without a glossy halo.
+      faceColor += vec3(0.025, 0.018, 0.01) * max(normal.y, 0.0);
 
       // Speaking cheerful energy pulse
       faceColor += vec3(0.08, 0.055, 0.025) * (sin(uTime * 14.0) * 0.5 + 0.5) * uIsSpeaking;
@@ -790,7 +782,7 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
 // =======================================================================
 // EXPORTED SCENE CONTAINER (MAGICAL SPARKLES, CONTACT SHADOWS & STUDIO RIG)
 // =======================================================================
-export function Scene3D({
+function Scene3DCanvas({
   isSpeaking = false,
   className = '',
 }: {
@@ -851,5 +843,19 @@ export function Scene3D({
         </Float>
       </Canvas>
     </div>
+  );
+}
+
+export function Scene3D(props: { isSpeaking?: boolean; className?: string }) {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className={`w-full h-full min-h-16 flex items-center justify-center ${props.className || ''}`}>
+          <div className="w-14 h-14 rounded-full bg-brand-espresso/10 border border-brand-gold/40" aria-label="Asistente MontIA+" />
+        </div>
+      }
+    >
+      <Scene3DCanvas {...props} />
+    </ErrorBoundary>
   );
 }

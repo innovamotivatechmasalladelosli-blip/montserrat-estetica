@@ -193,6 +193,7 @@ export function Chatbot({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typewriterTimerRef = useRef<any>(null);
+  const welcomeSpeechTimeoutRef = useRef<number | null>(null);
 
   const savedChats = [
     { id: 'c1', date: 'Ayer', preview: 'Diagnóstico: Cabello fino, rizado...' },
@@ -212,6 +213,10 @@ export function Chatbot({
       if (typewriterTimerRef.current) {
         clearInterval(typewriterTimerRef.current);
       }
+      if (welcomeSpeechTimeoutRef.current) {
+        window.clearTimeout(welcomeSpeechTimeoutRef.current);
+        welcomeSpeechTimeoutRef.current = null;
+      }
       setIsSpeaking(false);
     }
     return () => {
@@ -219,35 +224,42 @@ export function Chatbot({
         clearInterval(typewriterTimerRef.current);
         typewriterTimerRef.current = null;
       }
+      if (welcomeSpeechTimeoutRef.current) {
+        window.clearTimeout(welcomeSpeechTimeoutRef.current);
+        welcomeSpeechTimeoutRef.current = null;
+      }
     };
   }, [isOpen, currentNav]);
 
   const startWelcomeSpeech = () => {
     if (typewriterTimerRef.current) {
       clearInterval(typewriterTimerRef.current);
+      typewriterTimerRef.current = null;
+    }
+    if (welcomeSpeechTimeoutRef.current) {
+      window.clearTimeout(welcomeSpeechTimeoutRef.current);
     }
     const targetText = getWelcomeTextForNav(currentNav, selectedServicesCount);
-    setWelcomeTypedText('');
+    // Render the complete message immediately; the assistant animation is
+    // decorative and should never hide or truncate the actual copy.
+    setWelcomeTypedText(targetText);
     setIsSpeaking(true);
     setShowQuestions(false);
-
-    let idx = 0;
-    typewriterTimerRef.current = setInterval(() => {
-      idx += 3;
-      if (idx >= targetText.length) {
-        setWelcomeTypedText(targetText);
-        setIsSpeaking(false);
-        setShowQuestions(true);
-        clearInterval(typewriterTimerRef.current);
-      } else {
-        setWelcomeTypedText(targetText.slice(0, idx));
-      }
-    }, 22);
+    welcomeSpeechTimeoutRef.current = window.setTimeout(() => {
+      setIsSpeaking(false);
+      setShowQuestions(true);
+      welcomeSpeechTimeoutRef.current = null;
+    }, 900);
   };
 
   const skipWelcomeSpeech = () => {
     if (typewriterTimerRef.current) {
       clearInterval(typewriterTimerRef.current);
+      typewriterTimerRef.current = null;
+    }
+    if (welcomeSpeechTimeoutRef.current) {
+      window.clearTimeout(welcomeSpeechTimeoutRef.current);
+      welcomeSpeechTimeoutRef.current = null;
     }
     const targetText = getWelcomeTextForNav(currentNav, selectedServicesCount);
     setWelcomeTypedText(targetText);
@@ -1103,11 +1115,12 @@ export function Chatbot({
           isOpen ? 'visible pointer-events-auto' : 'invisible pointer-events-none'
         }`}
       >
-        {/* Subtle Ambient Glow Background */}
+        {/* Digital particle field: quiet points instead of a glossy color bloom. */}
         <div 
-          className="absolute inset-0 pointer-events-none opacity-25 z-0"
+          className="absolute inset-0 pointer-events-none opacity-55 z-0"
           style={{
-            background: 'radial-gradient(circle at 50% 15%, rgba(223, 184, 121, 0.35) 0%, rgba(232, 180, 184, 0.15) 45%, transparent 75%)'
+            backgroundImage: 'radial-gradient(circle at 12% 18%, rgba(221,183,122,0.8) 0 1px, transparent 1.8px), radial-gradient(circle at 84% 24%, rgba(255,255,255,0.95) 0 1px, transparent 1.8px), radial-gradient(circle at 24% 58%, rgba(221,183,122,0.65) 0 1px, transparent 1.8px), radial-gradient(circle at 90% 70%, rgba(255,255,255,0.8) 0 1px, transparent 1.8px), radial-gradient(circle at 58% 88%, rgba(221,183,122,0.55) 0 1px, transparent 1.8px)',
+            backgroundSize: '170px 170px, 210px 210px, 240px 240px, 190px 190px, 260px 260px'
           }}
         />
 
@@ -1176,10 +1189,18 @@ export function Chatbot({
               {messages.length === 0 ? (
                 welcomeStage === 'intro' ? (
                   /* STEP 1: CENTERED 3D BALL WITH UNFOLDING SPEECH WINDOW */
-                  <div className="flex flex-col items-center justify-center min-h-[440px] my-auto px-1 py-4 text-center animate-in fade-in duration-500">
+                  <div className="relative flex flex-col items-center justify-center min-h-[440px] my-auto px-1 py-4 text-center animate-in fade-in duration-500">
+
+                    <div
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-56 pointer-events-none opacity-60"
+                      style={{
+                        backgroundImage: 'radial-gradient(circle at 10% 35%, rgba(221,183,122,0.8) 0 1px, transparent 1.8px), radial-gradient(circle at 28% 12%, rgba(255,255,255,0.95) 0 1px, transparent 1.8px), radial-gradient(circle at 72% 22%, rgba(221,183,122,0.7) 0 1px, transparent 1.8px), radial-gradient(circle at 92% 54%, rgba(255,255,255,0.9) 0 1px, transparent 1.8px), radial-gradient(circle at 58% 86%, rgba(221,183,122,0.65) 0 1px, transparent 1.8px)',
+                        backgroundSize: '140px 140px, 180px 180px, 210px 210px, 160px 160px, 190px 190px'
+                      }}
+                    />
                     
                     {/* 3D Robot Avatar Centered - Pure Clean Transparent Canvas (10% smaller) */}
-                    <div className="relative w-52 h-52 md:w-56 md:h-56 flex items-center justify-center mb-1">
+                    <div className="relative z-10 w-52 h-52 md:w-56 md:h-56 flex items-center justify-center mb-1">
                       <Scene3D isSpeaking={isSpeaking} />
                     </div>
 
@@ -1193,7 +1214,7 @@ export function Chatbot({
                       {/* Speech pointer tail */}
                       <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-brand-surface border-t border-l border-brand-border rotate-45 z-10" />
 
-                      <div className="relative z-0 overflow-hidden bg-brand-surface border border-brand-border rounded-2xl p-5 md:p-6 shadow-lg text-left select-none">
+                      <div className="relative z-0 overflow-hidden bg-brand-surface rounded-2xl p-5 md:p-6 text-left select-none">
 
                         {/* Relative Content Container */}
                         <div className="relative z-10">
@@ -1224,7 +1245,7 @@ export function Chatbot({
                           >
                             {welcomeTypedText}
                             {isSpeaking && (
-                              <span className="inline-block w-1.5 h-4 bg-brand-gold ml-1 animate-pulse align-middle rounded-full shadow-[0_0_8px_rgba(223,184,121,0.8)]" />
+                              <span className="inline-block w-1.5 h-4 bg-brand-gold ml-1 animate-pulse align-middle rounded-full" />
                             )}
                           </p>
 
