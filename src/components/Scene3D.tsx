@@ -513,19 +513,13 @@ const OrganicKawaiiFaceShader = {
       vec3 normal = normalize(vNormal);
       vec3 viewDir = normalize(vViewPosition);
 
-      // Smooth time cycle (~8s full spectrum loop)
-      float t = uTime * 0.125;
-
-      // Organic fluid plasma swirl inside the sphere
-      float swirl = sin(vLocalPosition.x * 3.5 + uTime * 0.8) * cos(vLocalPosition.y * 3.5 + uTime * 0.6) * 0.15;
-      float modulatedT = t + swirl;
-
-      // Luxurious Spline Color Keys
-      vec3 colA = vec3(0.58, 0.44, 0.68);
-      vec3 colB = vec3(0.42, 0.48, 0.54);
-      vec3 colC = vec3(1.0, 1.0, 1.0);
-      vec3 colD = vec3(0.78, 0.12, 0.54); // Anchored on Spline Royal Violet
-      vec3 base = pal(modulatedT, colA, colB, colC, colD);
+      // A restrained editorial gradient in the page palette, with only a tiny
+      // warm pulse while MontIA+ is speaking (no rainbow or neon colors).
+      float verticalShade = clamp(vLocalPosition.y * 0.55 + 0.52, 0.0, 1.0);
+      vec3 espresso = vec3(0.19, 0.14, 0.11);
+      vec3 creamGold = vec3(0.78, 0.62, 0.42);
+      vec3 base = mix(espresso, creamGold, verticalShade);
+      base += vec3(0.018, 0.012, 0.006) * sin(uTime * 2.0);
 
       // Studio overhead lighting falloff (bright velvet dome illumination)
       float topFalloff = clamp(normal.y * 0.58 + 0.48, 0.0, 1.0);
@@ -544,7 +538,7 @@ const OrganicKawaiiFaceShader = {
       faceColor = mix(faceColor, rim, fresnel * 0.56);
 
       // Speaking cheerful energy pulse
-      faceColor += vec3(0.08, 0.05, 0.12) * (sin(uTime * 14.0) * 0.5 + 0.5) * uIsSpeaking;
+      faceColor += vec3(0.08, 0.055, 0.025) * (sin(uTime * 14.0) * 0.5 + 0.5) * uIsSpeaking;
 
       // -----------------------------------------------------------------
       // PROJECTED 2D KAWAII FACE WITH SOFT GLOW BLOOM BLENDING
@@ -594,7 +588,6 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
 
   // Procedural assets
   const faceRenderer = useMemo(() => new KawaiiFaceRenderer(), []);
-  const pbrTextures = useMemo(() => createPbrCeramicTextures(), []);
   const faceShader = useMemo(() => {
     const mat = new THREE.ShaderMaterial(OrganicKawaiiFaceShader);
     mat.uniforms.uFaceTexture.value = faceRenderer.texture;
@@ -621,12 +614,9 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('touchmove', onTouchMove);
       faceRenderer.dispose();
-      pbrTextures.diffuseMap.dispose();
-      pbrTextures.normalMap.dispose();
-      pbrTextures.roughnessMap.dispose();
       faceShader.dispose();
     };
-  }, [faceRenderer, pbrTextures, faceShader]);
+  }, [faceRenderer, faceShader]);
 
   const handlePointerDown = useCallback(() => {
     setIsClicked(true);
@@ -721,11 +711,10 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
       faceShader.uniforms.uFaceTexture.value = faceRenderer.texture;
     }
 
-    // Dynamic point light that casts changing colors onto collar and ears
+      // Soft brand-gold light: stable and consistent with the editorial palette.
     if (faceLightRef.current) {
-      const hue = (t * 0.125) % 1.0;
-      faceLightRef.current.color.setHSL(hue, 0.85, 0.65);
-      faceLightRef.current.intensity = 1.6 + (isSpeaking ? 0.8 : 0);
+      faceLightRef.current.color.set('#DDB77A');
+      faceLightRef.current.intensity = 0.45 + (isSpeaking ? 0.2 : 0);
     }
 
     // 7. Click Jump Physics (Bouncy joyful anime hop)
@@ -769,28 +758,27 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
       position={[0, 0, 0]}
       onPointerDown={handlePointerDown}
     >
-      {/* Dynamic Point Light from glowing sphere */}
-      <pointLight ref={faceLightRef} position={[0, 0, 0.4]} distance={2.8} decay={2} intensity={2.0} />
+      {/* Subtle warm fill light from the orb */}
+      <pointLight ref={faceLightRef} position={[0, 0, 0.55]} distance={2.2} decay={2} intensity={0.45} color="#DDB77A" />
 
       {/* ================= PURA BOLITA MÁGICA 3D (ESFERA PLASMA + CARITA KAWAII + CÚPULA DE CRISTAL) ================= */}
       <group ref={headGroupRef} position={[0, 0, 0]}>
         {/* A. INNER PLASMA COLOR-CHANGING SPHERE WITH KAWAII FACE PROJECTED */}
         <mesh material={faceShader}>
-          <sphereGeometry args={[0.82, 64, 64]} />
+          <sphereGeometry args={[0.82, 32, 32]} />
         </mesh>
 
-        {/* B. OUTER CRYSTAL CLEAR GLASS HELMET WITH CLEARCOAT GLOSS */}
+        {/* B. Minimal matte shell: keeps the silhouette clean without a distracting glass halo. */}
         <mesh>
-          <sphereGeometry args={[0.88, 64, 64]} />
+          <sphereGeometry args={[0.87, 32, 32]} />
           <meshPhysicalMaterial
-            color="#FFFFFF"
-            roughness={0.04}
-            metalness={0.05}
-            clearcoat={1.0}
-            clearcoatRoughness={0.03}
+            color="#F8F0E7"
+            roughness={0.28}
+            metalness={0}
+            clearcoat={0.35}
+            clearcoatRoughness={0.2}
             transparent={true}
-            opacity={0.34}
-            reflectivity={0.98}
+            opacity={0.2}
             depthWrite={false}
           />
         </mesh>
@@ -823,43 +811,42 @@ export function Scene3D({
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.25,
         }}
-        dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1}
+        dpr={typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 1.5) : 1}
       >
         {/* Soft Studio Lighting Setup */}
-        <ambientLight intensity={1.5} color="#FFFFFF" />
-        <directionalLight position={[3.2, 5.0, 4.0]} intensity={1.8} color="#FFFFFF" />
-        <directionalLight position={[-3.2, 2.2, 2.5]} intensity={0.9} color="#F5F3FF" />
-        <directionalLight position={[0, 4.5, -2.8]} intensity={0.8} color="#EDE9FE" />
-        <directionalLight position={[0, -2.5, 2.0]} intensity={0.4} color="#FFFFFF" />
+        <ambientLight intensity={1.15} color="#FFF9F2" />
+        <directionalLight position={[3.2, 5.0, 4.0]} intensity={1.25} color="#FFF9F2" />
+        <directionalLight position={[-3.2, 2.2, 2.5]} intensity={0.45} color="#E7D3B8" />
+        <directionalLight position={[0, 4.5, -2.8]} intensity={0.35} color="#F2E5D4" />
 
         {/* Realistic Studio Contact Shadow on Ground (scaled to 3.24 for 0.9x model) */}
         <ContactShadows
           position={[0, -1.55, 0]}
-          opacity={0.48}
-          scale={3.24}
-          blur={2.4}
+          opacity={0.28}
+          scale={2.8}
+          blur={2.8}
           far={3.5}
           color="#3A2A48"
         />
 
         {/* Ambient Magical Floating Stardust Sparkles */}
         <Sparkles
-          count={isSpeaking ? 42 : 28}
+          count={isSpeaking ? 16 : 9}
           scale={[3.2, 3.2, 2.2]}
-          size={isSpeaking ? 3.0 : 2.2}
-          speed={0.5}
-          color="#E9D5FF"
+          size={isSpeaking ? 1.8 : 1.35}
+          speed={0.25}
+          color="#DDB77A"
         />
         <Sparkles
-          count={14}
+          count={5}
           scale={[2.4, 2.4, 1.8]}
-          size={1.8}
-          speed={0.7}
-          color="#FDE68A"
+          size={1.25}
+          speed={0.35}
+          color="#F8F0E7"
         />
 
         {/* Natural Organic Floating Group */}
-        <Float speed={1.8} rotationIntensity={0.12} floatIntensity={0.22}>
+        <Float speed={1.2} rotationIntensity={0.06} floatIntensity={0.12}>
           <RobotKawaiiMaster isSpeaking={isSpeaking} />
         </Float>
       </Canvas>

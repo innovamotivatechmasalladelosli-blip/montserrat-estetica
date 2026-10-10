@@ -64,7 +64,7 @@ export const services: Service[] = [
     description: "Exfoliación con sales minerales, hidratación profunda con mascarilla térmica y esmaltado en gel de larga duración con diseño minimalista opcional.",
     price: 900,
     duration: 60,
-    imageUrl: "https://s3.theasianparent.com/tap-assets-prod/wp-content/uploads/sites/12/2018/01/manicure-process-picture-id838483760.jpg",
+    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=800&auto=format&fit=crop",
     category: "Manicura y Pedicura",
     tags: ["RELAJACIÓN PROFUNDA", "UÑAS PERFECTAS"],
     features: ["Sales Minerales", "Masaje Relajante"],
