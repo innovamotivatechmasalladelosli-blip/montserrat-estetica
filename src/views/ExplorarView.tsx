@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, ShoppingBag, Scissors, Sparkles, Check } from 'lucide-react';
 import { services, products as seasonalProducts } from '../data';
 import { SafeImage } from '../components/SafeImage';
+import { LegalModal, type LegalPage } from '../components/LegalModal';
 
 interface ExplorarViewProps {
   onNavigate: (nav: string) => void;
   onSelectService?: (id: string) => void;
+  onOpenChat?: () => void;
 }
-
-export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps) {
+export function ExplorarView({ onNavigate, onSelectService, onOpenChat }: ExplorarViewProps) {
   const [productNotice, setProductNotice] = useState<string | null>(null);
+  const [legalPage, setLegalPage] = useState<LegalPage | null>(null);
+
+  useEffect(() => {
+    const openLegalPage = (event: Event) => {
+      const page = (event as CustomEvent<LegalPage>).detail;
+      if (['terms', 'copyright', 'privacy', 'cookies'].includes(page)) setLegalPage(page);
+    };
+    window.addEventListener('open-legal-page', openLegalPage);
+    return () => window.removeEventListener('open-legal-page', openLegalPage);
+  }, []);
 
   const handleBookService = (serviceId: string) => {
     if (onSelectService) {
@@ -88,6 +99,29 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
           Lo más pedido y recomendado
         </span>
       </div>
+
+      <section className="grid gap-5 rounded-[2rem] border border-brand-border/70 bg-brand-surface-container/45 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+        <div>
+          <span className="mb-2 block text-[10px] font-bold uppercase tracking-[.2em] text-brand-gold">MontIA+ · Orientación personalizada</span>
+          <h3 className="mb-3 font-serif text-2xl font-semibold text-brand-espresso">Ideas para el cabello que imaginas</h3>
+          <p className="max-w-3xl text-sm leading-6 text-brand-muted">Cuéntale al asistente tu tipo de cabello, tus objetivos y el resultado que buscas. También puedes adjuntar una foto para recibir ideas iniciales de tratamientos, hablar de sus posibles efectos y consultar productos del catálogo que podrían encajar con tu caso. La imagen es una referencia visual, no un diagnóstico ni una garantía de resultados; para confirmar compatibilidad, agenda una valoración.</p>
+        </div>
+        <button onClick={onOpenChat} className="shrink-0 rounded-full bg-brand-espresso px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-gold">Consultar a MontIA+</button>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Funciones del sitio">
+        {[
+          { title: 'Explorar servicios', text: 'Consulta tratamientos y detalles del catálogo.' },
+          { title: 'Orientación MontIA+', text: 'Pregunta sobre cabello, objetivos y fotos de referencia.' },
+          { title: 'Productos de cuidado', text: 'Descubre opciones del catálogo para tu rutina en casa.' },
+          { title: 'Preparar una reserva', text: 'Elige servicios, especialista, fecha y horario.' },
+        ].map(item => (
+          <article key={item.title} className="rounded-2xl border border-brand-border/60 bg-brand-surface p-5">
+            <h3 className="mb-1 font-serif text-base font-semibold text-brand-espresso">{item.title}</h3>
+            <p className="text-xs leading-5 text-brand-muted">{item.text}</p>
+          </article>
+        ))}
+      </section>
 
       {/* Productos de Temporada */}
       <section id="productos-temporada">
@@ -206,6 +240,18 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
            {'★'.repeat(5)}
          </div>
       </section>
+
+      <footer className="border-t border-brand-border/70 pt-6 pb-2 text-center">
+        <nav aria-label="Avisos del sitio" className="mb-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium text-brand-muted">
+          <button onClick={() => setLegalPage('terms')} className="hover:text-brand-espresso">Términos y servicios</button>
+          <button onClick={() => setLegalPage('copyright')} className="hover:text-brand-espresso">Derechos de autor</button>
+          <button onClick={() => setLegalPage('privacy')} className="hover:text-brand-espresso">Aviso de privacidad</button>
+          <button onClick={() => setLegalPage('cookies')} className="hover:text-brand-espresso">Política de cookies</button>
+        </nav>
+        <p className="text-[11px] text-brand-muted">© 2026 Montserrat Medina Estética. Todos los derechos reservados.</p>
+        <p className="mt-1 text-[10px] text-brand-muted/80">Los nombres de marca y productos pertenecen a sus respectivos titulares.</p>
+      </footer>
+      <LegalModal page={legalPage} onClose={() => setLegalPage(null)} />
     </main>
   );
 }

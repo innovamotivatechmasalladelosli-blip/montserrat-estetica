@@ -565,6 +565,7 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
   const rootRef = useRef<THREE.Group>(null);
   const headGroupRef = useRef<THREE.Group>(null);
   const faceLightRef = useRef<THREE.PointLight>(null);
+  const particleRef = useRef<THREE.Points>(null);
 
   // Interaction & animation states
   const mouse = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 });
@@ -622,6 +623,14 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
 
   useFrame(({ clock }, delta) => {
     const t = clock.getElapsedTime();
+
+    if (particleRef.current) {
+      particleRef.current.rotation.y = t * 0.25;
+      particleRef.current.rotation.x = Math.sin(t * 0.22) * 0.06;
+      const material = particleRef.current.material as THREE.PointsMaterial;
+      material.opacity = 0.88 + (Math.sin(t * 1.3) + 1) * 0.05;
+      material.size = 0.078 + (Math.sin(t * 1.7) + 1) * 0.012;
+    }
 
     // 1. Mouse Lerp Interpolation
     mouse.current.x += (mouse.current.targetX - mouse.current.x) * 0.08;
@@ -760,6 +769,42 @@ const RobotKawaiiMaster = ({ isSpeaking = false }: { isSpeaking?: boolean }) => 
           <sphereGeometry args={[0.82, 32, 32]} />
         </mesh>
 
+        {/* Moving pinpoints trace fine orbital rings directly over the sphere. */}
+        <points ref={particleRef} renderOrder={3}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              args={[(() => {
+                const count = 216;
+                const points = new Float32Array(count * 3);
+                for (let i = 0; i < count; i++) {
+                  const ring = i % 9;
+                  const indexInRing = Math.floor(i / 9);
+                  const ringCount = count / 9;
+                  const latitude = ((ring - 4) / 4) * 0.84;
+                  const angle = (indexInRing / ringCount) * Math.PI * 2 + ring * 0.12;
+                  const ringRadius = Math.sqrt(1 - latitude * latitude);
+                  const offset = i * 3;
+                  points[offset] = Math.cos(angle) * ringRadius * 0.838;
+                  points[offset + 1] = latitude * 0.838;
+                  points[offset + 2] = Math.sin(angle) * ringRadius * 0.838;
+                }
+                return points;
+              })(), 3]}
+            />
+          </bufferGeometry>
+          <pointsMaterial
+            color="#FFFFFF"
+            size={0.09}
+            sizeAttenuation
+            transparent
+            opacity={0.94}
+            depthWrite={false}
+            depthTest={false}
+            toneMapped={false}
+          />
+        </points>
+
         {/* B. Minimal matte shell: keeps the silhouette clean without a distracting glass halo. */}
         <mesh>
           <sphereGeometry args={[0.87, 32, 32]} />
@@ -836,7 +881,6 @@ function Scene3DCanvas({
           speed={0.35}
           color="#F8F0E7"
         />
-
         {/* Natural Organic Floating Group */}
         <Float speed={1.2} rotationIntensity={0.06} floatIntensity={0.12}>
           <RobotKawaiiMaster isSpeaking={isSpeaking} />

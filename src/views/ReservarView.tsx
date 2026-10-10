@@ -45,10 +45,10 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
           <CheckCircle2 className="w-10 h-10" />
         </div>
         <div className="space-y-2">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gold">Cita Reservada con Éxito</span>
-          <h2 className="font-serif text-3xl font-semibold text-brand-espresso">Te esperamos en el Atelier</h2>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-brand-gold">Resumen de reserva listo</span>
+          <h2 className="font-serif text-3xl font-semibold text-brand-espresso">Revisa tu selección</h2>
           <p className="text-sm text-brand-muted max-w-md mx-auto">
-            Hemos reservado tu horario. Recibirás un recordatorio por WhatsApp y correo antes de tu cita.
+            Esta demostración no envía tu solicitud ni bloquea el horario. Confirma directamente con el negocio la disponibilidad y los detalles antes de acudir.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
             </div>
           </div>
           <div className="flex justify-between items-center pt-1">
-            <span className="text-xs uppercase font-bold text-brand-muted tracking-widest">Total a Pagar</span>
+            <span className="text-xs uppercase font-bold text-brand-muted tracking-widest">Total estimado</span>
             <span className="font-serif font-bold text-xl text-brand-espresso">${totalPrice.toLocaleString()} MXN</span>
           </div>
         </div>

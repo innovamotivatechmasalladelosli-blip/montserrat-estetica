@@ -49,7 +49,7 @@ const getWelcomeTextForNav = (nav?: string, count: number = 0) => {
     return `¡Hola! Veo que estás revisando nuestro Menú de Servicios. Conozco cada tratamiento (balayage, botox capilar, keratina, spa). ¿Te recomiendo la opción perfecta para tu tipo de cabello?`;
   }
   if (nav === 'perfil') {
-    return `¡Hola! Estás en tu Perfil de cliente. Aquí puedes consultar tus citas y beneficios. ¿En qué te puedo orientar hoy?`;
+    return `¡Hola! Cuéntame cómo es tu cabello, qué quieres lograr y el resultado que imaginas. También puedes subir una foto para recibir ideas de tratamientos, una orientación inicial sobre sus posibles efectos y productos del catálogo que podrían adaptarse a tu caso. La foto ofrece solo una guía visual; la valoración final requiere revisar tu cabello en persona.`;
   }
   return `¡Hola! Qué gusto saludarte. Soy MontIA+, tu asistente inteligente en Montserrat Medina Estética. Estás en el Inicio: aquí puedes ver lo más solicitado del salón o agendar tu cita en segundos.`;
 };

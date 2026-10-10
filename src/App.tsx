@@ -85,7 +85,7 @@ function App() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="w-full flex-1 flex flex-col"
           >
-            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} onSelectService={handleAddService} />}
+            {currentNav === 'explorar' && <ExplorarView onNavigate={setCurrentNav} onSelectService={handleAddService} onOpenChat={() => setIsChatOpen(true)} />}
             {currentNav === 'servicios' && <ServiciosView selectedServices={selectedServices} handleSelectService={handleSelectService} />}
             {currentNav === 'reservar' && <ReservarView selectedServices={selectedServices} onNavigate={setCurrentNav} />}
             {currentNav === 'perfil' && <PerfilView />}
@@ -190,4 +190,3 @@ function App() {
 }
 
 export default App;
-
