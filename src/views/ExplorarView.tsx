@@ -93,29 +93,6 @@ export function ExplorarView({ onNavigate, onSelectService, onOpenChat, onOpenLe
         </span>
       </div>
 
-      <section className="grid gap-5 rounded-[2rem] border border-brand-border/70 bg-brand-surface-container/45 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
-        <div>
-          <span className="mb-2 block text-[10px] font-bold uppercase tracking-[.2em] text-brand-gold">MontIA+ · Orientación personalizada</span>
-          <h3 className="mb-3 font-serif text-2xl font-semibold text-brand-espresso">Ideas para el cabello que imaginas</h3>
-          <p className="max-w-3xl text-sm leading-6 text-brand-muted">Cuéntale al asistente tu tipo de cabello, tus objetivos y el resultado que buscas. También puedes adjuntar una foto para recibir ideas iniciales de tratamientos, hablar de sus posibles efectos y consultar productos del catálogo que podrían encajar con tu caso. La imagen es una referencia visual, no un diagnóstico ni una garantía de resultados; para confirmar compatibilidad, agenda una valoración.</p>
-        </div>
-        <button onClick={onOpenChat} className="shrink-0 rounded-full bg-brand-espresso px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-gold">Consultar a MontIA+</button>
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Funciones del sitio">
-        {[
-          { title: 'Explorar servicios', text: 'Consulta tratamientos y detalles del catálogo.' },
-          { title: 'Orientación MontIA+', text: 'Pregunta sobre cabello, objetivos y fotos de referencia.' },
-          { title: 'Productos de cuidado', text: 'Descubre opciones del catálogo para tu rutina en casa.' },
-          { title: 'Preparar una reserva', text: 'Elige servicios, especialista, fecha y horario.' },
-        ].map(item => (
-          <article key={item.title} className="rounded-2xl border border-brand-border/60 bg-brand-surface p-5">
-            <h3 className="mb-1 font-serif text-base font-semibold text-brand-espresso">{item.title}</h3>
-            <p className="text-xs leading-5 text-brand-muted">{item.text}</p>
-          </article>
-        ))}
-      </section>
-
       {/* Productos de Temporada */}
       <section id="productos-temporada">
         <div className="flex justify-between items-end mb-6">
@@ -218,6 +195,14 @@ export function ExplorarView({ onNavigate, onSelectService, onOpenChat, onOpenLe
                </div>
             ))}
         </div>
+      </section>
+
+      <section className="flex flex-col gap-4 rounded-2xl border border-brand-border/60 bg-brand-surface-container/35 px-5 py-4 sm:flex-row sm:items-center sm:justify-between" aria-labelledby="hair-ideas-title">
+        <div className="min-w-0">
+          <h3 id="hair-ideas-title" className="font-serif text-lg font-semibold text-brand-espresso">Ideas para el cabello que imaginas</h3>
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-brand-muted">Cuéntanos tu objetivo o comparte una foto para recibir ideas de tratamientos, posibles efectos y productos del catálogo. Es una orientación inicial, no un diagnóstico.</p>
+        </div>
+        <button onClick={onOpenChat} className="shrink-0 self-start rounded-full border border-brand-border bg-brand-surface px-4 py-2 text-xs font-semibold text-brand-espresso transition hover:border-brand-gold hover:bg-brand-gold/10 sm:self-center">Consultar a MontIA+</button>
       </section>
 
       {/* Reviews Section */}

@@ -514,13 +514,22 @@ const OrganicKawaiiFaceShader = {
       vec3 normal = normalize(vNormal);
       vec3 viewDir = normalize(vViewPosition);
 
-      // A restrained editorial gradient in the page palette, with only a tiny
-      // warm pulse while MontIA+ is speaking (no rainbow or neon colors).
-      float verticalShade = clamp(vLocalPosition.y * 0.55 + 0.52, 0.0, 1.0);
+      // A fluid, slowly traveling gradient in MontIA+'s existing espresso and
+      // champagne-gold palette. The changing wave bends the color boundary
+      // across the sphere instead of flashing or introducing unrelated hues.
+      float colorFlow = 0.5 + 0.5 * sin(
+        uTime * 0.5 + vLocalPosition.y * 2.7 - vLocalPosition.x * 1.15 + vLocalPosition.z * 1.4
+      );
+      float verticalShade = clamp(vLocalPosition.y * 0.55 + 0.52 + (colorFlow - 0.5) * 0.42, 0.0, 1.0);
       vec3 espresso = vec3(0.19, 0.14, 0.11);
       vec3 creamGold = vec3(0.78, 0.62, 0.42);
       vec3 base = mix(espresso, creamGold, verticalShade);
-      base += vec3(0.018, 0.012, 0.006) * sin(uTime * 2.0);
+      float silkSweep = 1.0 - smoothstep(
+        0.0, 0.34,
+        abs(sin(vLocalPosition.x * 1.1 + vLocalPosition.y * 0.85 + vLocalPosition.z * 0.9 - uTime * 0.32))
+      );
+      base = mix(base, creamGold * 1.08, silkSweep * 0.13);
+      base += vec3(0.008, 0.006, 0.003) * sin(uTime * 1.1);
 
       // Studio overhead lighting falloff (bright velvet dome illumination)
       float topFalloff = clamp(normal.y * 0.58 + 0.48, 0.0, 1.0);
