@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Check, Star, Clock, CreditCard, Banknote, Landmark, CheckCircle2, Calendar } from 'lucide-react';
 import { stylists, services } from '../data';
+import { SafeImage } from '../components/SafeImage';
 
 interface ReservarViewProps {
   selectedServices: string[];
@@ -119,7 +120,7 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
 
       {/* Selected Service Header */}
       <section className="bg-brand-surface-container/60 border border-brand-border/60 p-4.5 rounded-3xl flex items-center gap-4 shadow-sm">
-        <img referrerPolicy="no-referrer" src={primaryService.imageUrl} alt={primaryService.title} className="w-16 h-16 rounded-2xl object-cover shadow-inner" />
+        <SafeImage referrerPolicy="no-referrer" src={primaryService.imageUrl} alt={primaryService.title} className="w-16 h-16 rounded-2xl object-cover shadow-inner" />
         <div className="flex-1 min-w-0">
            <div className="flex justify-between items-start">
               <span className="text-[9px] font-bold tracking-widest uppercase text-brand-gold mb-1 block">
@@ -186,7 +187,7 @@ export function ReservarView({ selectedServices, onNavigate }: ReservarViewProps
                  selectedStylist === stylist.id ? 'border-brand-gold ring-1 ring-brand-gold bg-brand-surface-container/70' : 'border-brand-border bg-brand-surface hover:border-brand-gold/50'
                }`}
              >
-                <img referrerPolicy="no-referrer" src={stylist.imageUrl} alt={stylist.name} className="w-12 h-12 rounded-full object-cover shadow-sm shrink-0" />
+                <SafeImage referrerPolicy="no-referrer" src={stylist.imageUrl} alt={stylist.name} className="w-12 h-12 rounded-full object-cover shadow-sm shrink-0" />
                 <div className="flex-1">
                    <h4 className="font-serif text-lg font-semibold text-brand-espresso">{stylist.name}</h4>
                    <p className="text-[11px] text-brand-muted mb-1">{stylist.title}</p>

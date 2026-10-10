@@ -20,6 +20,25 @@ interface Message {
   };
 }
 
+async function requestChat(body: Record<string, unknown>) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 25000);
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Chat API failed with ${response.status}`);
+    const data = await response.json();
+    if (typeof data.text !== 'string' || !data.text.trim()) throw new Error('Chat API returned an empty response');
+    return data as { text: string };
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
 const getWelcomeTextForNav = (nav?: string, count: number = 0) => {
   if (nav === 'reservar') {
     return count > 0 
@@ -195,6 +214,12 @@ export function Chatbot({
       }
       setIsSpeaking(false);
     }
+    return () => {
+      if (typewriterTimerRef.current) {
+        clearInterval(typewriterTimerRef.current);
+        typewriterTimerRef.current = null;
+      }
+    };
   }, [isOpen, currentNav]);
 
   const startWelcomeSpeech = () => {
@@ -830,18 +855,8 @@ export function Chatbot({
           } else {
             // Real Gemini AI Chat Query!
             try {
-              const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  prompt: text,
-                  currentNav,
-                  selectedServicesCount
-                })
-              });
-
-              if (res.ok) {
-                const data = await res.json();
+              const data = await requestChat({ prompt: text, currentNav, selectedServicesCount });
+              if (data.text) {
                 const { cleanText, actionElement } = parseActionTags(data.text || '');
                 setStep('idle');
                 setIsTyping(false);
@@ -953,22 +968,7 @@ export function Chatbot({
     setIsTyping(true);
     setIsSpeaking(true);
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          prompt: text, 
-          imageBase64,
-          currentNav,
-          selectedServicesCount
-        })
-      });
-
-      if (!res.ok) {
-        throw new Error('API Unavailable');
-      }
-
-      const data = await res.json();
+      const data = await requestChat({ prompt: text, imageBase64, currentNav, selectedServicesCount });
       const { cleanText, actionElement } = parseActionTags(data.text || '');
 
       setMessages(prev => [...prev, {

@@ -77,7 +77,7 @@ export const services: Service[] = [
     description: "Baño efervescente de hierbas aromáticas, tratamiento de durezas, masaje de reflexología podal de 20 min y esmaltado perfecto.",
     price: 1300,
     duration: 75,
-    imageUrl: "https://images.unsplash.com/photo-1516975080661-460d3d5267a1?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=800&auto=format&fit=crop",
     category: "Manicura y Pedicura",
     tags: ["RITUAL EXCLUSIVO", "ALIVIO DE ESTRÉS"],
     features: ["Baño Botánico", "Reflexología"]
@@ -115,6 +115,6 @@ export const stylists: Stylist[] = [
 
 export const products = [
   { id: 'p1', name: 'Bain Elixir Ultime', brand: 'Kérastase', price: 900, img: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop' },
-  { id: 'p2', name: 'No. 7 Bonding Oil', brand: 'Olaplex', price: 600, img: 'https://tse3.mm.bing.net/th/id/OIP.zDvvMFaK3UansmWKTFL4ngHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { id: 'p2', name: 'No. 7 Bonding Oil', brand: 'Olaplex', price: 600, img: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=400&auto=format&fit=crop' },
   { id: 'p3', name: 'Masque Chromatique', brand: 'Kérastase', price: 1100, img: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=400&auto=format&fit=crop' },
 ];

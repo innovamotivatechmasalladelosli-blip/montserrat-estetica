@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, ShoppingBag, Scissors, Sparkles, Check } from 'lucide-react';
 import { services, products as seasonalProducts } from '../data';
+import { SafeImage } from '../components/SafeImage';
 
 interface ExplorarViewProps {
   onNavigate: (nav: string) => void;
@@ -40,7 +41,7 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
         className="relative rounded-[2rem] overflow-hidden h-[420px] md:h-[500px] w-full group bg-brand-espresso text-brand-surface shadow-md"
       >
          <div className="absolute inset-0 w-full h-full object-cover">
-            <img 
+            <SafeImage
               src="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2938&auto=format&fit=crop" 
               alt="Estética y Botánica" 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
@@ -103,7 +104,7 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
           {seasonalProducts.map(product => (
             <div key={product.id} className="min-w-[220px] md:min-w-[250px] group cursor-pointer snap-start active:scale-[0.98] transition-transform">
               <div className="bg-brand-surface-container/60 rounded-3xl p-6 border border-brand-border/60 hover:border-brand-gold/60 transition-colors mb-3 flex flex-col items-start justify-between relative overflow-hidden h-[250px] shadow-sm">
-                <img 
+                <SafeImage
                   referrerPolicy="no-referrer" 
                   src={product.img} 
                   alt={product.name} 
@@ -150,7 +151,7 @@ export function ExplorarView({ onNavigate, onSelectService }: ExplorarViewProps)
                  onClick={() => handleBookService(service.id)} 
                  className="group min-w-[300px] md:min-w-[400px] bg-brand-surface-container/60 rounded-3xl p-6 snap-start border border-brand-border/60 cursor-pointer hover:shadow-xl active:scale-[0.98] transition-all duration-500 flex flex-col relative overflow-hidden h-[320px]"
                >
-                  <img 
+                  <SafeImage
                     referrerPolicy="no-referrer" 
                     src={service.imageUrl} 
                     alt={service.title} 

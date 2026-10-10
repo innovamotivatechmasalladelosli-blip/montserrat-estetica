@@ -20,6 +20,10 @@ app.get('/api/health', (req, res) => {
 app.post('/api/chat', async (req, res) => {
   try {
     const { prompt, imageBase64, currentNav = 'explorar', selectedServicesCount = 0 } = req.body;
+
+    if (typeof prompt !== 'string' && !imageBase64) {
+      return res.status(400).json({ error: 'Prompt or image is required' });
+    }
     
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ error: 'GEMINI_API_KEY is missing' });
@@ -68,7 +72,9 @@ Ejemplo de recomendación:
     for (const modelName of candidateModels) {
       try {
         if (imageBase64) {
-          const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+          const imageMatch = String(imageBase64).match(/^data:(image\/[\w.+-]+);base64,(.+)$/);
+          const mimeType = imageMatch?.[1] || 'image/jpeg';
+          const base64Data = imageMatch?.[2] || String(imageBase64).replace(/^data:image\/[^;]+;base64,/, '');
           const resp = await ai.models.generateContent({
             model: modelName,
             contents: [
@@ -78,7 +84,7 @@ Ejemplo de recomendación:
                   { text: prompt || "Analiza esta imagen y dame recomendaciones de tus servicios de estética." },
                   {
                     inlineData: {
-                      mimeType: 'image/jpeg',
+                      mimeType,
                       data: base64Data
                     }
                   }
@@ -97,7 +103,7 @@ Ejemplo de recomendación:
           responseText = resp.text || '';
         }
 
-        if (responseText) {
+        if (responseText.trim()) {
           break; // successfully generated
         }
       } catch (err: any) {
@@ -110,13 +116,13 @@ Ejemplo de recomendación:
       throw lastErr || new Error('No response from AI models');
     }
 
-    res.json({ text: responseText });
+    res.json({ text: responseText.trim() });
 
   } catch (error: any) {
     console.error('Error generating content:', error);
     // Provide a smart assistant fallback instead of breaking
     const fallbackText = "Con gusto te asisto. Te recomiendo nuestro tratamiento estrella de recuperación y brillo capilar:\n[WIDGET: s2]\nTambién puedes agendar tu cita directamente seleccionando tu fecha y estilista:";
-    res.json({ text: fallbackText });
+    res.json({ text: fallbackText, fallback: true });
   }
 });
 

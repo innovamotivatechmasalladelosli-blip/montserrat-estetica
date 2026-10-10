@@ -1,6 +1,7 @@
 import React from 'react';
 import { Service } from '../types';
 import { Clock, Wind, ScanFace } from 'lucide-react';
+import { SafeImage } from './SafeImage';
 
 interface StandardServiceCardProps {
   service: Service;
@@ -22,7 +23,7 @@ export function StandardServiceCard({ service, isSelected, onSelect }: StandardS
       <div className="flex gap-4">
         {/* Image Thumbnail */}
         <div className="relative w-[88px] h-[104px] shrink-0 rounded-2xl overflow-hidden bg-brand-border">
-          <img referrerPolicy="no-referrer" src={service.imageUrl} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+          <SafeImage referrerPolicy="no-referrer" src={service.imageUrl} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
         </div>
 
         {/* Info */}

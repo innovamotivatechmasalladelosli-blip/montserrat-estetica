@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { UserCircle2, Calendar, Clock, ChevronRight, MapPin, Sparkles, CreditCard, Settings, LogOut, Award } from 'lucide-react';
+import { SafeImage } from '../components/SafeImage';
 
 export function PerfilView() {
   const pastServices = [
@@ -15,7 +16,7 @@ export function PerfilView() {
       <section className="flex flex-col items-center text-center mt-4 mb-8">
         <div className="relative mb-4">
           <div className="w-24 h-24 rounded-full bg-brand-surface-container border-2 border-brand-gold p-1">
-            <img referrerPolicy="no-referrer" 
+            <SafeImage referrerPolicy="no-referrer"
               src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" 
               alt="Profile" 
               className="w-full h-full rounded-full object-cover"

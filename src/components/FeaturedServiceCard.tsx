@@ -1,6 +1,7 @@
 import React from 'react';
 import { Service } from '../types';
 import { Clock, Droplet, ArrowRight, Check } from 'lucide-react';
+import { SafeImage } from './SafeImage';
 
 interface FeaturedServiceCardProps {
   service: Service;
@@ -13,7 +14,7 @@ export function FeaturedServiceCard({ service, isSelected, onSelect }: FeaturedS
     <div className={`relative group overflow-hidden rounded-[24px] cursor-pointer active:scale-[0.98] transition-all duration-500 h-full flex flex-col ${isSelected ? 'ring-2 ring-brand-espresso shadow-xl' : 'ring-1 ring-brand-border shadow-sm hover:shadow-md'} bg-brand-surface-container`}>
       {/* Image Header */}
       <div className="relative h-64 md:h-80 lg:h-96 w-full shrink-0 overflow-hidden">
-        <img referrerPolicy="no-referrer" src={service.imageUrl} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <SafeImage referrerPolicy="no-referrer" src={service.imageUrl} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         
         {/* Top Badges */}

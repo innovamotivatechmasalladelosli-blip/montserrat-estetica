@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import * as THREE from 'three';
 import App from './App.tsx';
 import './index.css';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Silently suppress THREE.Clock deprecation warning until @react-three/fiber migrates to THREE.Timer
 if (typeof (THREE as any).setConsoleFunction === 'function') {
@@ -31,8 +32,13 @@ if (typeof window !== 'undefined') {
   });
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  createRoot(rootElement).render(
+    <ErrorBoundary fallback={null}>
+      <StrictMode>
+        <App />
+      </StrictMode>
+    </ErrorBoundary>,
+  );
+}
